@@ -1,0 +1,3 @@
+/Users/jstan/gasPDEs/build/CMakeFiles/gasPDEs.dir
+/Users/jstan/gasPDEs/build/CMakeFiles/edit_cache.dir
+/Users/jstan/gasPDEs/build/CMakeFiles/rebuild_cache.dir
