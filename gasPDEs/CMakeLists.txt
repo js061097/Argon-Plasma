@@ -21,6 +21,7 @@ set(SOURCES
     src/Processor.cpp
     src/Model.cpp
     src/Solver.cpp
+    src/Reaction.cpp
 )
 
 # Add executable
