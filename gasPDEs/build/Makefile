@@ -201,6 +201,30 @@ src/Processor.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/gasPDEs.dir/build.make CMakeFiles/gasPDEs.dir/src/Processor.cpp.s
 .PHONY : src/Processor.cpp.s
 
+src/Reaction.o: src/Reaction.cpp.o
+.PHONY : src/Reaction.o
+
+# target to build an object file
+src/Reaction.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/gasPDEs.dir/build.make CMakeFiles/gasPDEs.dir/src/Reaction.cpp.o
+.PHONY : src/Reaction.cpp.o
+
+src/Reaction.i: src/Reaction.cpp.i
+.PHONY : src/Reaction.i
+
+# target to preprocess a source file
+src/Reaction.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/gasPDEs.dir/build.make CMakeFiles/gasPDEs.dir/src/Reaction.cpp.i
+.PHONY : src/Reaction.cpp.i
+
+src/Reaction.s: src/Reaction.cpp.s
+.PHONY : src/Reaction.s
+
+# target to generate assembly for a file
+src/Reaction.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/gasPDEs.dir/build.make CMakeFiles/gasPDEs.dir/src/Reaction.cpp.s
+.PHONY : src/Reaction.cpp.s
+
 src/Solver.o: src/Solver.cpp.o
 .PHONY : src/Solver.o
 
@@ -267,6 +291,9 @@ help:
 	@echo "... src/Processor.o"
 	@echo "... src/Processor.i"
 	@echo "... src/Processor.s"
+	@echo "... src/Reaction.o"
+	@echo "... src/Reaction.i"
+	@echo "... src/Reaction.s"
 	@echo "... src/Solver.o"
 	@echo "... src/Solver.i"
 	@echo "... src/Solver.s"

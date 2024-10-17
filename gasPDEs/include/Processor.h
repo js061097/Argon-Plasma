@@ -1,5 +1,5 @@
-#ifndef POSTPROCESSOR_H
-#define POSTPROCESSOR_H
+#ifndef PROCESSOR_H
+#define PROCESSOR_H
 
 #include <sundials/sundials_types.h>
 #include <cvode/cvode.h>
@@ -22,21 +22,30 @@
 #include "sunnonlinsol/sunnonlinsol_fixedpoint.h" /* access to the fixed point SUNNonlinearSolver */
 #include "sunnonlinsol/sunnonlinsol_newton.h" /* access to the newton SUNNonlinearSolver      */
 
-class PostProcessor 
+class Processor 
 {
 public:
-    PostProcessor();
-    PostProcessor(Inputs* inputs);
-    ~PostProcessor();
+    Processor();
+    Processor(Inputs* inputs);
+    ~Processor();
     void initialize();
     void printIntro();
     void printHeader();
-    void printOutput(sunrealtype t, sunrealtype y0, sunrealtype y1, sunrealtype y2, int qu, sunrealtype hu);
+
+    void initializeCSV(const std::string& filename);
+
+    void printOutput(sunrealtype t, double y0, double y1, double y2, double y3, double n1, double n2, double temp, double ydot1, double ydot2, double ydot3, double term4, int qu, sunrealtype hu);
+    void appendToCSV(const std::string& filename, double t, double y0, double y1, 
+                            double y2, double y3, double n1, double n2, double temp, 
+                            double ydot1, double ydot2, double ydot3, double term4, 
+                            int qu, sunrealtype hu);
+    void createPythonScript();
     void printFinalStats(void* cvode_mem, sunrealtype ero);
     void printErrInfo(int nerr);
     void printErrOutput(sunrealtype tol_factor);
 
     Inputs* m_inputs;
+    bool m_csv_initialized;
 };
 
 sunrealtype MaxError(N_Vector y, sunrealtype t);

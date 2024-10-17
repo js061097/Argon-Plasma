@@ -1,59 +1,78 @@
+
 #include "Processor.h"
 #include <iostream>
 #include "Solver.h"
 #include "Inputs.h"
+#include <fstream>
 
-PostProcessor::PostProcessor()
+Processor::Processor()
 {
-   
+   m_csv_initialized = false;
 }
 
-PostProcessor::PostProcessor(Inputs* inputs)
+Processor::Processor(Inputs* inputs)
 {
     m_inputs = inputs;
+    m_csv_initialized = false;
 }
 
-PostProcessor::~PostProcessor()
+Processor::~Processor()
 {
 
 }
 
-void PostProcessor::initialize()
+void Processor::initialize()
 {
 
 }
 
-void PostProcessor::printIntro() 
+void Processor::printIntro() 
 {
     printf("Demonstration program for CVODE package - direct linear solvers\n");
     printf("\n\n");
     printf("Problem: Argon Plasma Physics\n");
 #if defined(SUNDIALS_EXTENDED_PRECISION)
-    printf(" neq = %d,  reltol = %.2Lg,  abstol = %.2Lg", m_inputs->Neq, m_inputs->m_rtol, m_inputs->m_atol);
+    printf(" neq = %d,  reltol = %.2Lg,  abstol = %.2Lg", m_inputs->m_Neq, m_inputs->m_rtol, m_inputs->m_atol);
 #elif defined(SUNDIALS_DOUBLE_PRECISION)
-    printf(" neq = %d,  reltol = %.2g,  abstol = %.2g", m_inputs->Neq, m_inputs->m_rtol, m_inputs->m_atol);
+    printf(" neq = %d,  reltol = %.2g,  abstol = %.2g", m_inputs->m_Neq, m_inputs->m_rtol, m_inputs->m_atol);
 #else
-    printf(" neq = %d,  reltol = %.2g,  abstol = %.2g", m_inputs->Neq, m_inputs->m_rtol, m_inputs->m_atol);
+    printf(" neq = %d,  reltol = %.2g,  abstol = %.2g", m_inputs->m_Neq, m_inputs->m_rtol, m_inputs->m_atol);
 #endif
 }
 
-void PostProcessor::printHeader() 
+void Processor::printHeader() 
 {
-    printf("\n     t           Yar+              Yar*              Te         qu     hu \n");
+    printf("\n     t           Yar              Yar+              Yar*           Ye-           Nar+           Nar*            Te           ydot0           ydot1           ydot2            term4         qu     hu \n");
 }
 
-void PostProcessor::printOutput(sunrealtype t, sunrealtype y0, sunrealtype y1, sunrealtype y2, int qu, sunrealtype hu) 
+void Processor::printOutput(double t, double y0, double y1, double y2, double y3, double n1, double n2, double temp, double ydot1, double ydot2, double ydot3, double term4, int qu, sunrealtype hu) 
 {
+    if (!m_csv_initialized) {
+            initializeCSV("output.csv");
+            m_csv_initialized = true;  // Set the flag to prevent re-initialization
+        }
 #if defined(SUNDIALS_EXTENDED_PRECISION)
-    printf("%10.5Lf    %12.5Le   %12.5Le   %12.5e   %2d    %6.4Le\n", t, y0, y1, y2, qu, hu);
+    printf("%10.5Lf    %12.5Le   %12.5Le   %12.5Le   %12.5e   %12.5Le   %12.5e    %12.5e    %12.5e    %12.5e    %12.5e    %12.5e    %2d    %6.4Le\n", t, y0, y1, y2, y3, n1, n2, temp, ydot1, ydot2, ydot3, term4, qu, hu);
 #elif defined(SUNDIALS_DOUBLE_PRECISION)
-    printf("%10.5f    %12.5e   %12.5e   %12.5e   %2d    %6.4e\n", t, y0, y1, y2, qu, hu);
+    printf("%10.5Lf    %12.5Le   %12.5Le   %12.5Le   %12.5e   %12.5Le   %12.5e    %12.5e    %12.5e    %12.5e    %12.5e    %12.5e    %2d    %6.4Le\n", t, y0, y1, y2, y3, n1, n2, temp, ydot1, ydot2, ydot3, term4, qu, hu);
 #else
-    printf("%10.5f    %12.5e   %12.5e   %12.5e   %2d    %6.4e\n", t, y0, y1, y2, qu, hu);
+    printf("%10.5Lf    %12.5Le   %12.5Le   %12.5Le   %12.5e   %12.5Le   %12.5e    %12.5e    %12.5e    %12.5e    %12.5e    %12.5e    %2d    %6.4Le\n", t, y0, y1, y2, y3, n1, n2, temp, ydot1, ydot2, ydot3, term4, qu, hu);
 #endif
+appendToCSV("output.csv", t, y0, y1, y2, y3, n1, n2, temp, ydot1, ydot2, ydot3, term4, qu, hu);
+
 }
 
-void PostProcessor::printErrOutput(sunrealtype tol_factor) 
+void Processor::initializeCSV(const std::string& filename) {
+    std::ofstream file(filename);  // Open in write mode to create or overwrite
+    if (file.is_open()) {
+        file << "t,Yar,Yar+,Yar*,Ye-,Nar+,Nar*,Te,ydot0,ydot1,ydot2,term4,qu,hu\n";
+        file.close();
+    } else {
+        std::cerr << "Unable to create or open CSV file: " << filename << std::endl;
+    }
+}
+
+void Processor::printErrOutput(sunrealtype tol_factor) 
 {
 #if defined(SUNDIALS_EXTENDED_PRECISION)
     printf("\n\n Error exceeds %Lg * tolerance \n\n", tol_factor);
@@ -64,7 +83,72 @@ void PostProcessor::printErrOutput(sunrealtype tol_factor)
 #endif
 }
 
-void PostProcessor::printFinalStats(void* cvode_mem, sunrealtype ero) 
+void Processor::appendToCSV(const std::string& filename, double t, double y0, double y1, 
+                            double y2, double y3, double n1, double n2, double temp, 
+                            double ydot1, double ydot2, double ydot3, double term4, 
+                            int qu, sunrealtype hu) {
+    std::ofstream file(filename, std::ios::app);  // Open in append mode
+    if (file.is_open()) {
+        file << std::fixed << std::setprecision(10)
+             << t << "," << y0 << "," << y1 << "," << y2 << "," << y3 << ","
+             << n1 << "," << n2 << "," << temp << "," << ydot1 << "," << ydot2 << ","
+             << ydot3 << "," << term4 << "," << qu << "," << hu << "\n";
+        file.close();
+    } else {
+        std::cerr << "Unable to open CSV file for appending: " << filename << std::endl;
+    }
+}
+
+#include <fstream>  // Required for file handling
+
+void Processor::createPythonScript() {
+    std::ofstream pythonFile("plot_data.py");  // Create the Python file
+    if (pythonFile.is_open()) {
+        pythonFile << R"(
+import pandas as pd
+import matplotlib.pyplot as plt
+import sys
+
+# Check if the correct number of arguments are provided
+if len(sys.argv) != 3:
+    print("Usage: python plot_data.py <X-axis-column> <Y-axis-column>")
+    sys.exit(1)
+
+# Get column names for X and Y axes from command-line arguments
+x_col = sys.argv[1]
+y_col = sys.argv[2]
+
+# Read the CSV file
+try:
+    df = pd.read_csv('output.csv')
+except FileNotFoundError:
+    print("Error: 'output.csv' not found. Please run your C++ program to generate the CSV.")
+    sys.exit(1)
+print(df['t'][0]==df['t'][1])
+# Check if the provided columns exist in the CSV
+if x_col not in df.columns or y_col not in df.columns:
+    print(f"Error: Columns '{x_col}' or '{y_col}' not found in the CSV file.")
+    print(f"Available columns: {', '.join(df.columns)}")
+    sys.exit(1)
+
+# Plot the data
+plt.figure(figsize=(8, 5))
+plt.plot(df[x_col], df[y_col], linestyle='-')
+plt.xlabel(x_col)
+plt.ylabel(y_col)
+plt.title(f'{y_col} vs {x_col}')
+plt.grid(True)
+plt.show()
+        )";
+        pythonFile.close();
+        //std::cout << "Python script 'plot_data.py' created successfully." << std::endl;
+    } else {
+        std::cerr << "Unable to create 'plot_data.py'." << std::endl;
+    }
+}
+
+
+void Processor::printFinalStats(void* cvode_mem, sunrealtype ero) 
 {
     long int lenrw, leniw, lenrwLS, leniwLS;
     long int nst, nfe, nsetups, nni, ncfn, netf, nje, nfeLS;
@@ -113,7 +197,7 @@ void PostProcessor::printFinalStats(void* cvode_mem, sunrealtype ero)
 #endif
 }
 
-void PostProcessor::printErrInfo(int nerr) 
+void Processor::printErrInfo(int nerr) 
 {
     printf("\n\n-------------------------------------------------------------");
     printf("\n-------------------------------------------------------------");

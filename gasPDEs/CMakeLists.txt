@@ -42,3 +42,4 @@ target_link_libraries(gasPDEs m)  # Math library, if needed
 
 # Additional settings
 set_target_properties(gasPDEs PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+    

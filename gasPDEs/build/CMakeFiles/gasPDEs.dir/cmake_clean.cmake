@@ -5,6 +5,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/gasPDEs.dir/src/Model.cpp.o.d"
   "CMakeFiles/gasPDEs.dir/src/Processor.cpp.o"
   "CMakeFiles/gasPDEs.dir/src/Processor.cpp.o.d"
+  "CMakeFiles/gasPDEs.dir/src/Reaction.cpp.o"
+  "CMakeFiles/gasPDEs.dir/src/Reaction.cpp.o.d"
   "CMakeFiles/gasPDEs.dir/src/Solver.cpp.o"
   "CMakeFiles/gasPDEs.dir/src/Solver.cpp.o.d"
   "CMakeFiles/gasPDEs.dir/src/main.cpp.o"

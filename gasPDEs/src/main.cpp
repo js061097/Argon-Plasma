@@ -29,13 +29,18 @@
 #include "Model.h"
 #include "Solver.h"
 
-int main() 
+int main(int argc, char *argv[]) 
 {
+    for(int i=0;i<argc;i++)
+        std::cout<<argv[i]<<"\n";
+
     //  inputs
     Inputs* inputs = new Inputs();
-    inputs->initialize();std::cout<<"\n\n"<<"****************"<<"\n\n";
+    inputs->initialize();
+    std::cout<<"\n\n"<<"****************"<<"\n\n";
+    inputs->finalize();
 
-    PostProcessor* pp = new PostProcessor(inputs);  //For handling print statements both intro and end
+    Processor* pp = new Processor(inputs);  //For handling print statements both intro and end
     //pp->initialize();
     pp->printIntro();
 
@@ -43,7 +48,8 @@ int main()
     Solver* solver = new Solver();
 
     // model
-    Model* model = new Model(inputs, solver);
+    //Model* model = new Model(inputs, solver);
+    Model* model = new Model(inputs,solver); 
 
     //  initialize model
     model->initialize();

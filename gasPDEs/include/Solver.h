@@ -21,7 +21,7 @@
 #include "sunnonlinsol/sunnonlinsol_newton.h" /* access to the newton SUNNonlinearSolver      */
 
 /* Linear Solver Option */
-#define DENSE_DQ      2
+#define DENSE_DQ      2 
 
 class Model; //Forward declaration - error resulting in not declaring prior to usage during make
 
